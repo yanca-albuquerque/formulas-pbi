@@ -1,0 +1,47 @@
+# Operações Matemáticas Básicas (DAX)
+
+## Soma e Subtração
+Geralmente usamos os operadores padrão (+ e -) ou a função SUM para colunas.
+
+-- Soma simples de uma coluna
+Total Vendas = SUM('TabelaVendas'[ValorVenda])
+
+-- Subtração entre duas medidas
+Lucro Bruto = [Total Vendas] - [Total Custos]
+
+## Multiplicação
+
+-- Multiplicação simples entre medidas
+Faturamento Projetado = [Total Vendas] * 1.10 -- Aumento de 10%
+
+-- Multiplicação linha a linha (Iterador) - Ideal para Preço x Quantidade
+Total Linha a Linha = SUMX(
+    'TabelaVendas',
+    'TabelaVendas'[Quantidade] * 'TabelaVendas'[PrecoUnitario]
+)
+
+## Divisão e Porcentagem
+
+-- A função DIVIDE trata automaticamente o erro se o denominador for 0
+Ticket Medio = DIVIDE([Total Vendas], [Qtd Transacoes], 0)
+
+% Vendas = 
+DIVIDE(
+    [Qtd Vendida],
+    CALCULATE( [Qtd total], ALL('BASE') )
+)
+
+% Vendas = 
+DIVIDE(
+    [Qtd vendida],
+    [Qtd total]
+)
+
+% Vendas = 
+DIVIDE(
+    COUNT('BASE'[Vendas]), 
+    CALCULATE(
+        COUNT('BASE'[Vendas),
+        ALL('BASE')
+    )
+)
