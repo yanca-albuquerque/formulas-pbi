@@ -1,0 +1,12 @@
+Tabela Calendário
+
+Calendario = 
+ADDCOLUMNS (
+    CALENDARAUTO(),
+    "Ano", YEAR ( [Date] ),
+    "NumMes", MONTH([Date]),
+    "Mes", FORMAT([Date], "MMMM"),
+    "DiaMes", FORMAT([Date], "DD/MM"),
+    "AnoMes", FORMAT([Date], "YYYY-MM"),
+    "Mes Ordenado", FORMAT(MONTH([Date]), "00") & ". " & FORMAT([Date], "MMMM")  
+)
