@@ -1,5 +1,6 @@
-Tabela Calendário
+Tabelas Calendário
 
+## Opção 1
 Calendario = 
 ADDCOLUMNS (
     CALENDARAUTO(),
@@ -9,4 +10,19 @@ ADDCOLUMNS (
     "DiaMes", FORMAT([Date], "DD/MM"),
     "AnoMes", FORMAT([Date], "YYYY-MM"),
     "Mes Ordenado", FORMAT(MONTH([Date]), "00") & ". " & FORMAT([Date], "MMMM")  
+)
+
+## Opção 2
+Calendario = 
+VAR DataMinima = MIN('TABELA'[DATA ENTRADA]) // Pega a menor data da sua base
+VAR DataMaxima = MAX('TABELA'[DATA SAÍDA]) // Pega a maior data
+RETURN
+ADDCOLUMNS (
+    CALENDAR(DataMinima, DataMaxima),
+    "Ano", YEAR ( [Date] ),
+    "NumMes", MONTH([Date]),
+    "Mes", FORMAT([Date], "MMMM", "pt-BR"),
+    "DiaMes", FORMAT([Date], "DD/MM"),
+    "AnoMes", FORMAT([Date], "YYYY-MM"),
+    "Mes Ordenado", FORMAT([Date], "MM") & ". " & FORMAT([Date], "MMMM", "pt-BR")
 )
