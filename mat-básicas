@@ -45,3 +45,6 @@ DIVIDE(
         ALL('BASE')
     )
 )
+
+# Modelo Cards
+Card Total = [Total de Vendas] + 0
