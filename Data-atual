@@ -1,0 +1,20 @@
+#Data Atual
+
+Passos:
+Página Inicial > Transformar Dados > Nova Fonte > Consulta nula
+Na barra de fórmulas digite o código e aperte Enter:
+= DateTime.FixedLocalNow()
+
+Guia Transformar > Converter em Tabela > Ok
+Renomear a Coluna: Data Atualização
+Ajustar o Tipo: Data/Hora
+Fechar e aplicar
+
+Código M (Editor Avançado)
+let
+    Fonte = DateTime.FixedLocalNow(),
+    #"Convertido para Tabela" = #table(1, {{Fonte}}),
+    #"Colunas Renomeadas" = Table.RenameColumns(#"Convertido para Tabela",{{"Column1", "Data Atualização"}}),
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Colunas Renomeadas",{{"Data Atualização", type datetime}})
+in
+    #"Tipo Alterado"
