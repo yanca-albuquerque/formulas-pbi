@@ -1,0 +1,178 @@
+Html_Bloco_Interface = 
+/* --- 1. TRAVA DE SEGURANÇA --- */
+VAR vTemFiltro = 
+    HASONEVALUE('Base'[id_eqpto]) || 
+    HASONEVALUE('Base'[id_rede]) || 
+    ISFILTERED('Base'[nome_eqpto]) || 
+    ISFILTERED('Base'[desig])
+
+/* --- 2. GERAÇÃO DO CONTEÚDO --- */
+VAR vConteudoHTML = 
+    IF(
+        vTemFiltro = FALSE(),
+        /* CENÁRIO A: VAZIO (SKELETON) */
+        "
+        <div class='header-table'>
+            <span class='c-icon'></span>
+            <span class='c-desig'>DESIGNAÇÃO</span>
+            <span class='c-if'>IFDESCR</span>
+            <span class='c-tipo'>TIPO</span>
+            <span class='c-funcao'>TIPO FUNÇÃO</span>
+            <span class='c-tec'>TECNOLOGIA</span>
+            <span class='c-serv'>SERVIÇO</span>
+            <span class='c-status'>STATUS</span>
+            <span class='c-borda'>BORDA</span>
+            <span class='c-porta'>PORTA</span>
+            <span class='c-ip'>IP</span>
+            <span class='c-vel text-right'>VELOCIDADE</span>
+        </div>
+        <div class='scroll-area' style='display:flex; justify-content:center; align-items:center; color:#999;'>
+            - Selecione um equipamento -
+        </div>
+        ",
+
+        /* CENÁRIO B: DADOS REAIS */
+        CONCATENATEX(
+            'Base',
+            "
+            <details>
+                <summary>
+                    <div class='summary-grid'>
+                        <span class='c-icon icon-arrow'>▶</span>
+                        <span class='c-desig text-bold'>" & 'Base'[desig] & "</span>
+                        <span class='c-if'>" & 'Base'[ifdescr] & "</span>
+                        <span class='c-tipo'>" & 'Base'[interface_tipo] & "</span>
+                        <span class='c-funcao'>" & 'Base'[tipo_funcao] & "</span>
+                        <span class='c-tec'>" & 'Base'[tecnologia] & "</span>
+			<span class='c-serv'>" & 'Base'[rede_servico] & "</span>
+			<span class='c-status'>" & 'Base'[eqpto_status] & "</span>
+                        <span class='c-borda'>" & 'Base'[roteador_borda] & "</span>
+                        <span class='c-porta'>" & 'Base'[porta] & "</span>
+                        <span class='c-ip'>" & 'Base'[ip_interface] & "</span>
+                        <span class='c-vel text-right'>" & 'Base'[velocidade] & "</span>
+                    </div>
+                </summary>
+                
+            </details>
+            ",
+            ""
+        )
+    )
+
+RETURN
+"
+<style>
+    /* --- ESTRUTURA GERAL --- */
+    .container-interface { 
+        font-family: 'Segoe UI', sans-serif; 
+        font-size: 11px; 
+        display: flex; 
+        flex-direction: column; 
+        background: #fff; 
+        border: none; 
+        border-radius: 0px; 
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+        height: 98vh;
+        width: 100%;
+        overflow: hidden; 
+        padding: 0px; 
+        box-sizing: border-box;
+    }
+
+    .scroll-area { 
+        overflow-y: auto; 
+        background: #fff; 
+        flex-grow: 1; 
+        height: 100%; 
+        border: none; 
+        border-top: none; 
+        border-bottom-left-radius: 2px; 
+        border-bottom-right-radius: 4px;
+    }
+
+    /* --- SISTEMA DE COLUNAS --- */
+    .c-icon   { width: 3%; text-align:center; }
+    .c-desig  { width: 15%; word-break: break-all; padding-right:5px; }
+    .c-if     { width: 14%; word-break: break-all; padding-right:5px; }
+    .c-tipo   { width: 8%; }
+    .c-tec    { width: 8%; }
+    .c-serv    { width: 8%; }
+    .c-status    { width: 8%; }
+    .c-funcao { width: 10%; }
+    .c-borda  { width: 12%; }
+    .c-porta  { width: 15%; }
+    .c-ip     { width: 8%; }
+    .c-vel    { width: 12%; }
+
+    .text-bold { font-weight: bold; color: #333; }
+    .text-right { text-align: right; padding-right: 5px; }
+
+    /* --- CABEÇALHO --- */
+    .header-table {
+        display: flex; align-items: center;
+        background: #E3262E; 
+        color: white;
+        padding: 5px 5px; 
+        font-weight: bold;
+        border-radius: 2px 2px 0 0;
+        font-size: 10px; 
+        text-transform: uppercase;
+        flex-shrink: 0; 
+    }
+
+    /* --- DETALHES E INTERAÇÃO --- */
+    details { border-bottom: 1px solid #eee; }
+    details > .row-details { display: none; }
+    details[open] > .row-details { display: block; animation: fadein 0.3s; }
+    
+    @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+
+    summary { list-style: none; cursor: pointer; outline: none; }
+    summary::-webkit-details-marker { display: none; }
+
+    .summary-grid {
+        display: flex; align-items: center;
+        padding: 4px 4px;
+        background: #fff;
+        min-height: 25px;
+    }
+    .summary-grid:hover { background-color: #fcecece; } 
+
+    .icon-arrow { font-size: 10px; color: #E3262E; transition: transform 0.2s; }
+    details[open] .icon-arrow { transform: rotate(90deg); } 
+    details[open] .summary-grid { background-color: #fff5f5; border-bottom: 1px solid #eee; }
+
+</style>
+
+<div class='container-interface'>
+    
+    <div style='font-size:11px; font-weight:bold; color:#E3262E; border-bottom:2px solid #E3262E; padding-bottom:2px; margin-bottom:5px; flex-shrink:0;'>
+        INTERFACES
+    </div>
+
+    <div style='display:flex; flex-direction:column; flex-grow:1; min-height:0;'>
+        " & IF(vTemFiltro, 
+            /* COM DADOS */
+            "<div class='header-table'>
+                <span class='c-icon'></span>
+                <span class='c-desig'>DESIGNAÇÃO</span>
+                <span class='c-if'>IFDESCR</span>
+                <span class='c-tipo'>TIPO</span>
+                <span class='c-funcao'>TIPO FUNÇÃO</span>
+                <span class='c-tec'>TECNOLOGIA</span>
+ 		<span class='c-serv'>SERVIÇO</span>
+		<span class='c-status'>STATUS</span>
+                <span class='c-borda'>BORDA</span>
+                <span class='c-porta'>PORTA</span>
+                <span class='c-ip'>IP</span>
+                <span class='c-vel text-right'>VELOCIDADE</span>
+            </div>
+            <div class='scroll-area'>" & vConteudoHTML & "</div>",
+            
+            /* SEM DADOS */
+            vConteudoHTML 
+           ) & "
+    </div>
+
+</div>
+"
