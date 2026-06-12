@@ -1,0 +1,131 @@
+Html_Bloco_Tabela = 
+VAR vTemFiltro = TRUE() // Força o código a sempre carregar os dados
+
+/* --- CONTEÚDO --- */
+VAR vConteudoHTML = 
+    /* DADOS REAIS DIRETO */
+    CONCATENATEX(
+        'Base',
+        "
+        <details>
+            <summary>
+                <div class='summary-grid'>
+                    <span class='c-icon icon-arrow'>▶</span>
+                    <span class='c-1'>" & 'Base'[1 & "</span>
+                    <span class='c-2'>" & 'Base'[2] & "</span>
+                    <span class='c-3'>" & 'Base'[3] & "</span>
+                    <span class='c-4'>" & 'Base'[4] & "</span>
+                    <span class='c-5'>" & 'Base'[5] & "</span>
+                    <span class='c-6'>" & 'Base'[6] & "</span>
+                    <span class='c-status'>" & 'Base'[status] & "</span>
+                </div>
+            </summary>
+            
+        </details>
+        ",
+        ""
+    )
+
+RETURN
+"
+<style>
+    /* --- ESTRUTURA GERAL --- */
+    .container-NOME { 
+        font-family: 'Segoe UI', sans-serif; 
+        font-size: 11px; 
+        display: flex; 
+        flex-direction: column; 
+        background: #fff; 
+        border: none; 
+        border-radius: 0px; 
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+        height: 98vh;
+        width: 100%;
+        overflow: hidden; 
+        padding: 0px; 
+        box-sizing: border-box;
+    }
+
+    .scroll-area { 
+        overflow-y: auto; 
+        background: #fff; 
+        flex-grow: 1; 
+        height: 100%; 
+        border: none; 
+        border-top: none; 
+        border-bottom-left-radius: 2px; 
+        border-bottom-right-radius: 4px;
+    }
+
+    /* --- SISTEMA DE COLUNAS --- */
+    .c-icon   { width: 3%; text-align:center; }
+    .c-1  { width: 15%; word-break: break-all; padding-right:5px; }
+    .c-2    { width: 14%; word-break: break-all; padding-right:5px; }
+    .c-3   { width: 8%; }
+    .c-4    { width: 8%; }
+    .c-5    { width: 8%; }
+    .c-6   { width: 8%; }
+    .c-7 { width: 10%; }
+
+    .text-bold { font-weight: bold; color: #333; }
+    .text-right { text-align: right; padding-right: 5px; }
+
+    /* --- CABEÇALHO --- */
+    .header-table {
+        display: flex; align-items: center;
+        background: #B3B3B3; 
+        color: white;
+        padding: 5px 5px; 
+        font-weight: bold;
+        border-radius: 2px 2px 0 0;
+        font-size: 10px; 
+        text-transform: uppercase;
+        flex-shrink: 0; 
+    }
+
+    /* --- DETALHES E INTERAÇÃO --- */
+    details { border-bottom: 1px solid #eee; }
+    details > .row-details { display: none; }
+    details[open] > .row-details { display: block; animation: fadein 0.3s; }
+    
+    @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+
+    summary { list-style: none; cursor: pointer; outline: none; }
+    summary::-webkit-details-marker { display: none; }
+
+    .summary-grid {
+        display: flex; align-items: center;
+        padding: 4px 4px;
+        background: #fff;
+        min-height: 25px;
+    }
+    .summary-grid:hover { background-color: #fcecece; } 
+
+    .icon-arrow { font-size: 10px; color: #B3BB3B3; transition: transform 0.2s; }
+    details[open] .icon-arrow { transform: rotate(90deg); } 
+    details[open] .summary-grid { background-color: #fff5f5; border-bottom: 1px solid #eee; }
+
+</style>
+
+<div class='container-NOME'>
+    
+    <div style='font-size:11px; font-weight:bold; color:#B3B3B3; border-bottom:2px solid #B3B3B3; padding-bottom:2px; margin-bottom:5px; flex-shrink:0;'>
+        TITULO
+    </div>
+
+    <div style='display:flex; flex-direction:column; flex-grow:1; min-height:0;'>
+        <div class='header-table'>
+            <span class='c-icon'></span>
+            <span class='c-1'>NOME1</span>
+            <span class='c-2'>NOME2</span>
+            <span class='c-3'>NOME3</span>
+            <span class='c-4'>NOME4</span>
+            <span class='c-5'>NOME5</span>
+            <span class='c-6'>NOME6</span>
+            <span class='c-7'>NOME7</span>
+        </div>
+        <div class='scroll-area'>" & vConteudoHTML & "</div>
+    </div>
+
+</div>
+"
