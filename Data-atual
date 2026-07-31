@@ -11,6 +11,18 @@ Ajustar o Tipo: Data/Hora
 Fechar e aplicar
 
 Código M (Editor Avançado)
+#1
+let
+    Universal = DateTimeZone.UtcNow(),
+    FusoBrasilia = DateTimeZone.SwitchZone(Universal, -3, 0),
+    DataHoraLocal = DateTimeZone.RemoveZone(FusoBrasilia),
+    #"Convertido para Tabela" = #table(1, {{DataHoraLocal}}),
+    #"Colunas Renomeadas" = Table.RenameColumns(#"Convertido para Tabela",{{"Column1", "Data Atualização"}}),
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Colunas Renomeadas",{{"Data Atualização", type datetime}})
+in
+    #"Tipo Alterado"
+
+#2
 let
     Fonte = DateTime.FixedLocalNow(),
     #"Convertido para Tabela" = #table(1, {{Fonte}}),
