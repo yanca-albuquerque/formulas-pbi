@@ -1,0 +1,158 @@
+Html_Bloco_Atendimento = 
+/* --- 1. CAPTURA DOS DADOS --- */
+VAR vAtendente       = SELECTEDVALUE('Base'[atendente], "-")
+VAR vNota     = SELECTEDVALUE('Base'[nota], "-")
+VAR vDescricao = SELECTEDVALUE('Base'[descricao], "-")
+
+/* --- 2. TRAVA DE SEGURANÇA --- */
+VAR vTemFiltro = HASONEVALUE('Base'[Codigo])
+
+/* --- 3. GERAÇÃO DO HTML --- */
+VAR vConteudoHTML = 
+    IF(
+        NOT(vTemFiltro),
+        
+        /* CENÁRIO A: SEM FILTRO (MANTÉM O GRID E OS TÍTULOS NO TOPO) */
+        "
+        <div class='scroll-area'>
+            <div class='info-grid'>
+                
+                <div class='info-item'>
+                    <span class='label'>Atendente</span>
+                    <span class='value text-bold'>-</span>
+                </div>
+
+                <div class='info-item'>
+                    <span class='label'>Nota</span>
+                    <span class='value text-highlight'>-</span>
+                </div>
+
+                <div class='info-item'>
+                    <span class='label'>Descrição</span>
+                    <span class='value'>-</span>
+                </div>
+
+            </div>
+        </div>
+        ",
+
+        /* CENÁRIO B: DADOS REAIS */
+        "
+        <div class='scroll-area'>
+            <div class='info-grid'>
+                
+                <div class='info-item'>
+                    <span class='label'>Atendente</span>
+                    <span class='value text-bold'>" & vAtendente & "</span>
+                </div>
+
+                <div class='info-item'>
+                    <span class='label'>Nota</span>
+                    <span class='value text-highlight'>" & vNota & "</span>
+                </div>
+
+                <div class='info-item'>
+                    <span class='label'>Descrição</span>
+                    <span class='value'>" & vDescricao & "</span>
+                </div>
+
+            </div>
+        </div>
+        "
+    )
+
+RETURN
+"
+<style>
+    .container-info { 
+        font-family: 'Segoe UI', sans-serif; 
+        font-size: 11px; 
+        display: flex; 
+        flex-direction: column; 
+        background: #fff; 
+        width: 100%;
+        height: 100vh; 
+        overflow: hidden; 
+        padding: 2px;
+        box-sizing: border-box; 
+    }
+
+    .titulo-fixo {
+        font-size: 10px; 
+        font-weight: bold; 
+        color: #ffffff; 
+        background-color: #015f2b; 
+        padding: 6px 6px; 
+        margin-bottom: 4px; 
+        text-transform: uppercase;
+        border-radius: 2px 2px 0 0;
+        flex-shrink: 0;  
+    }
+
+    .scroll-area { 
+        overflow-y: auto; 
+        background: #ffffff; 
+        flex: 1 1 auto; 
+        height: 100%; 
+        padding: 2px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr 2fr; 
+        gap: 8px; 
+        align-items: stretch;
+        height: 100%;
+        flex: 1 1 auto;
+    }
+
+    /* --- ESTILO DOS CARDS DAS COLUNAS --- */
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        padding: 8px;
+        background-color: #f9f9f9; 
+        border: 1px solid #eee;
+        border-radius: 4px;
+        border-left: 4px solid #015f2b; 
+        justify-content: flex-start;
+        box-sizing: border-box;
+        height: 100%;
+    }
+
+    .label {
+        font-size: 10px;
+        font-weight: 700;
+        color: #888;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+
+    .value {
+        font-size: 12px;
+        color: #333;
+        white-space: pre-wrap;
+        word-break: break-word;
+        line-height: 1.4;
+    }
+
+    .text-bold {
+        font-weight: bold;
+        color: #222;
+    }
+
+    .text-highlight {
+        font-weight: bold;
+        color: #015f2b;
+    }
+</style>
+
+<div class='container-info'>
+    <div class='titulo-fixo'>
+        Atendimento - Nota
+    </div>
+    " & vConteudoHTML & "
+</div>
+"
