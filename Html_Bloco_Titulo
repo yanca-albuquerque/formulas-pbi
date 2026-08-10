@@ -1,0 +1,162 @@
+Html_Bloco_Titulo = 
+/* --- 1. TRAVA DE SEGURANÇA ESTRITA --- */
+VAR vTemFiltro = HASONEVALUE('Base'[codigo]) || HASONEVALUE('Base'[id])
+
+/* --- 2. CAPTURA DOS DADOS --- */
+VAR vID       = SELECTEDVALUE('Base'[id], "-")
+VAR vCodigo   = SELECTEDVALUE('Base'[codigo], "-")
+VAR vTitulo  = SELECTEDVALUE('Base'[titulo], "-")
+VAR vStatus   = SELECTEDVALUE('Base'[status], "-")
+
+VAR vCorPrincipal = "#0d773d"
+
+/* --- 3. REGRA DO STATUS --- */
+VAR vClasseStatus = 
+    IF(
+        NOT(vTemFiltro),
+        "status-Padrao",
+        SWITCH(
+            TRUE(),
+            vStatus IN {"Em andamento", "A Fazer"}, "status-Fazer",
+            vStatus = "Finalizado", "status-Finalizado",
+            vStatus = "Pausado", "status-Pausado",
+            "status-Padrao"
+        )
+    )
+
+/* --- 4. MONTAGEM DA URL --- */
+VAR vLink_Titulo = 
+    IF(
+        vTemFiltro && NOT(ISBLANK(vID)) && vID <> "-",
+        "https://titulo.com.br/detalhes/" & vID,
+        "javascript:void(0);"
+    )
+
+/* --- 5. RENDERIZAÇÃO DO CÓDIGO/LINK --- */
+VAR vHTML_Codigo = 
+    IF(
+        vTemFiltro && vLink_Titulo <> "javascript:void(0);",
+        "<a href='" & vLink_Titulo & "' target='_blank' class='link-style'>" & vCodigo & "</a>",
+        "<span>" & vCodigo & "</span>"
+    )
+
+RETURN
+"
+<style>
+    /* Estilo do Container Principal */
+    .header-container {
+        font-family: 'Segoe UI', sans-serif;
+        display: flex;
+        justify-content: space-between; 
+        align-items: center;
+        background-color: #ffffff;
+        border-radius: 6px;
+        padding: 10px 18px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+        border-left: 6px solid " & vCorPrincipal & ";
+        width: 100%;
+        box-sizing: border-box;
+        gap: 16px;
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .item-chamado { flex: 0 0 16%; }
+    .item-titulo { flex: 1 1 66%; }
+    .item-status  { flex: 0 0 18%; align-items: center; text-align: center; }
+
+    .label {
+        font-size: 12px;
+        text-transform: uppercase;
+        color: #888;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    .value {
+        font-size: 14px;
+        font-weight: bold;
+        color: #333;
+        line-height: 1.2;
+    }
+
+    .value-titulo {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        word-break: break-word;
+    }
+
+    /* Links */
+    .link-style { 
+        text-decoration: none; 
+        color: " & vCorPrincipal & "; 
+        cursor: pointer; 
+        pointer-events: auto; 
+    }
+    .link-style:hover { 
+        text-decoration: underline; 
+    }
+
+     /* Badges de Status */
+    .status-Fazer { 
+        color: #b43224; 
+        background-color: #fadbd8; 
+        padding: 4px 12px; 
+        border-radius: 4px; 
+        font-size: 12px; 
+        font-weight: bold;
+        display: inline-block;
+    }
+    .status-Finalizado { 
+        color: #1e8449; 
+        background-color: #d4efdf; 
+        padding: 4px 12px; 
+        border-radius: 4px; 
+        font-size: 12px; 
+        font-weight: bold;
+        display: inline-block;
+    }
+    .status-Pausado { 
+        color: #b7950b; 
+        background-color: #fef9e7; 
+        padding: 4px 12px; 
+        border-radius: 4px; 
+        font-size: 12px; 
+        font-weight: bold;
+        display: inline-block;
+    }
+    .status-Padrao {
+        color: #5d6d7e;
+        background-color: #ebedef;
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        display: inline-block;
+    }
+</style>
+
+<div class='header-container'>
+
+  <div class='info-item item-codigo'>
+    <span class='label'>Codigo</span>
+    <span class='value'>" & vHTML_Codigo & "</span>
+  </div>
+
+  <div class='info-item item-titulo'>
+    <span class='label'>Titulo</span>
+    <span class='value-titulo'>" & vTitulo & "</span>
+  </div>
+
+  <div class='info-item item-status'>
+    <span class='label'>Status</span>
+    <div><span class='" & vClasseStatus & "'>" & vStatus & "</span></div>
+  </div>
+
+</div>
+"
