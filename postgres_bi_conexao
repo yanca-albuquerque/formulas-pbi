@@ -1,0 +1,13 @@
+Conexão Postgres > BI
+
+Instalar ODBC: https://www.postgresql.org/ftp/odbc/releases/
+
+No BI
+Fonte de Dados > ODBC
+DSN: NENHUM
+Cadeia de conexão: Driver={PostgreSQL ANSI(x64)}; Server=seu server; Port=5432; Database=seu banco;Timeout=30;
+SQL: select * from tabela/view
+
+Instalar gateway
+
+Publicar o BI > Configurar credencial do banco no BI Service(web) > configurar atualização.
