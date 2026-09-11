@@ -44,3 +44,8 @@ VAR  SVG =
 
 RETURN
 IF(LimitePeriodo, SVG, BLANK())
+
+
+
+--------------------------------
+# Categoria de Dados: Clique na medida Html_Modelo_Cronograma > no menu superior (Ferramentas de Medida), altere a Categoria de dados de "Não categorizado" para URL da Imagem.
