@@ -1,0 +1,46 @@
+Html_Modelo_Cronograma = 
+VAR PeriodoAtual = SELECTEDVALUE(PERIODO[IDPERIODO]) -- Coluna usada nas colunas da matriz
+VAR ValorMes = [Medida de Valor]
+
+-- Trava para não criar colunas além do período 12
+VAR LimitePeriodo = IF(PeriodoAtual <= 12, TRUE(), FALSE())
+
+-- Calcula o total do item para extrair a % real do mês
+VAR TotalItem = 
+    CALCULATE(
+        [Medida de Valor], 
+        ALLSELECTED(PERIODO[IDPERIODO])
+    )
+VAR Perc = DIVIDE(ValorMes, TotalItem, 0)
+
+-- Textos formatados
+VAR TxtPerc = IF(Perc > 0, FORMAT(Perc, "0%"), "0%")
+VAR TxtValor = IF(ValorMes > 0, FORMAT(ValorMes, "R$ #,##0.00"), "R$ 0,00")
+
+-- Definição visual: Ativo x Inativo (0%)
+VAR CorTexto = IF(ValorMes > 0, "#263238", "#CFD8DC") -- Cinza escuro se ativo, cinza claro se 0%
+VAR PesoFonte = IF(ValorMes > 0, "700", "400")
+VAR BarraVerde = 
+    IF(
+        ValorMes > 0,
+        "<rect x='0' y='54' width='100%' height='6' fill='#00C853' />", 
+        "" -- Sem barra quando 0%
+    )
+
+VAR  SVG = 
+    "data:image/svg+xml;utf8," & 
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 60' width='100%' height='100%'>" &
+        -- Percentual (% no topo, centralizado e itálico)
+        "<text x='50%' y='22' text-anchor='middle' font-family='Segoe UI, sans-serif' font-size='14' font-style='italic' font-weight='" & PesoFonte & "' fill='" & CorTexto & "'>" & 
+            TxtPerc & 
+        "</text>" &
+        -- Valor em R$ (centralizado logo abaixo)
+        "<text x='50%' y='43' text-anchor='middle' font-family='Segoe UI, sans-serif' font-size='12' font-weight='" & PesoFonte & "' fill='" & CorTexto & "'>" & 
+            TxtValor & 
+        "</text>" &
+        -- Barra Verde Inferior (fica apenas nos meses ativos)
+        BarraVerde &
+    "</svg>"
+
+RETURN
+IF(LimitePeriodo, SVG, BLANK())
