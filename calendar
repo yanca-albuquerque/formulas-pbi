@@ -122,3 +122,13 @@ DATATABLE (
         {"2027-12-25", "Natal"}
     }
 )
+
+# Obs:
+import holidays
+
+# Seleciona os feriados do Brasil para o ano corrente (ex: 2026)
+feriados_br = holidays.Brazil(years=2026)
+
+# Lista as datas e os nomes dos feriados
+for data, nome in sorted(feriados_br.items()):
+    print(f"{data}: {nome}")
