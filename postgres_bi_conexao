@@ -11,3 +11,5 @@ SQL: select * from tabela/view
 Instalar gateway
 
 Publicar o BI > Configurar credencial do banco no BI Service(web) > configurar atualização.
+
+Obs: caso de erro usar assim - Driver={PostgreSQL Unicode(x64)};Server=seu server;Port=5432;Database=seu banco;Timeout=30;ClientEncoding=UTF8;
