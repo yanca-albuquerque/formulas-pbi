@@ -1,0 +1,255 @@
+Html_Bloco_Funcionarios =
+/* --- 1. CAPTURA DOS DADOS --- */
+VAR vTotalGeralRaw = [Total Funcionários]
+VAR vTotalGeral = IF(ISBLANK(vTotalGeralRaw), "0", FORMAT(vTotalGeralRaw, "#,##0"))
+
+VAR vAprendizRaw = [Total Aprendizes]
+VAR vAprendiz = IF(ISBLANK(vAprendizRaw), "0", FORMAT(vAprendizRaw, "#,##0"))
+
+VAR vPcdTotalRaw = [Total Funcionários PCD]
+VAR vPcdTotal = IF(ISBLANK(vPcdTotalRaw), "0", FORMAT(vPcdTotalRaw, "#,##0"))
+
+VAR vPcdHomensRaw = [Total PCD Homens]
+VAR vPcdHomens = IF(ISBLANK(vPcdHomensRaw), "0", FORMAT(vPcdHomensRaw, "#,##0"))
+
+VAR vPcdMulheresRaw = [Total PCD Mulheres]
+VAR vPcdMulheres = IF(ISBLANK(vPcdMulheresRaw), "0", FORMAT(vPcdMulheresRaw, "#,##0"))
+
+VAR vHomensRaw = [Total Homens]
+VAR vHomens = IF(ISBLANK(vHomensRaw), "0", FORMAT(vHomensRaw, "#,##0"))
+
+VAR vMulheresRaw = [Total Mulheres]
+VAR vMulheres = IF(ISBLANK(vMulheresRaw), "0", FORMAT(vMulheresRaw, "#,##0"))
+
+RETURN
+"
+<style>
+    .container-info {
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 11px;
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+        padding: 4px;
+        box-sizing: border-box;
+    }
+
+    .scroll-area {
+        overflow-y: auto;
+        background: #ffffff;
+        flex: 1 1 auto;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .info-grid {
+        display: flex;
+        align-items: stretch;
+        gap: 12px;
+        height: 100%;
+        flex: 1 1 auto;
+    }
+
+    /* Sub-grupos */
+    .section-block {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .section-geral {
+        flex: 2;
+    }
+
+    .section-pcd {
+        flex: 3;
+    }
+
+    .section-genero {
+        flex: 2;
+    }
+
+    /* Barras de Título */
+    .title-geral {
+        font-size: 10px;
+        font-weight: 700;
+        color: #ffffff;
+        background-color: #005ca4;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 5px 8px;
+        border-radius: 4px 4px 0 0;
+        text-align: center;
+        margin-bottom: 4px;
+    }
+
+    .title-pcd {
+        font-size: 10px;
+        font-weight: 700;
+        color: #ffffff;
+        background-color: #2c6ea4;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 5px 8px;
+        border-radius: 4px 4px 0 0;
+        text-align: center;
+        margin-bottom: 4px;
+    }
+
+    .title-genero {
+        font-size: 10px;
+        font-weight: 700;
+        color: #ffffff;
+        background-color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 5px 8px;
+        border-radius: 4px 4px 0 0;
+        text-align: center;
+        margin-bottom: 4px;
+    }
+
+    .cards-row {
+        display: flex;
+        gap: 8px;
+        flex: 1;
+        height: 100%;
+    }
+
+    /* Linhas divisórias */
+    .divider {
+        width: 1px;
+        background-color: #E0E0E0;
+        margin: 2px 2px;
+    }
+
+    /* --- ESTILO DOS CARDS --- */
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        padding: 6px 8px;
+        border-radius: 4px;
+        border: 1px solid #e9ecef;
+        justify-content: flex-start;
+        align-items: center;
+        box-sizing: border-box;
+        height: 100%;
+        flex: 1;
+    }
+
+    .card-total {
+        background-color: #f0f7fd;
+        border: 1px solid #d4e7f7;
+        border-left: 4px solid #005ca4;
+    }
+
+    .card-aprendiz {
+        background-color: #f8f9fa;
+        border-left: 4px solid #7f8c8d;
+    }
+
+    .card-pcd-total {
+        background-color: #f0f7fd;
+        border: 1px solid #d4e7f7;
+        border-left: 4px solid #005ca4;
+    }
+
+    .card-homem {
+        background-color: #f4faff;
+        border: 1px solid #e0f2fe;
+        border-left: 4px solid #19a1de;
+    }
+
+    .card-mulher {
+        background-color: #fdf5f9;
+        border: 1px solid #f9e2ef;
+        border-left: 4px solid #b81d77;
+    }
+
+    .label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #7f8c8d;
+        text-transform: uppercase;
+        margin-top: 2px;
+        margin-bottom: 4px;
+        white-space: nowrap;
+        text-align: center;
+        width: 100%;
+    }
+
+    .value {
+        font-size: 18px;
+        white-space: nowrap;
+        line-height: 1.4;
+        text-align: center;
+        width: 100%;
+        font-weight: bold;
+    }
+</style>
+
+<div class='container-info'>
+    <div class='scroll-area'>
+        <div class='info-grid'>
+
+            <!-- BLOCO 1: GERAL -->
+            <div class='section-block section-geral'>
+                <div class='title-geral'>Quadro Geral</div>
+                <div class='cards-row'>
+                    <div class='info-item card-total'>
+                        <span class='label'>Total Funcionários</span>
+                        <span class='value' style='color: #005ca4;'>" & vTotalGeral & "</span>
+                    </div>
+                    <div class='info-item card-aprendiz'>
+                        <span class='label'>Aprendizes</span>
+                        <span class='value' style='color: #2c3e50;'>" & vAprendiz & "</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class='divider'></div>
+
+            <!-- BLOCO 2: INCLUSÃO PCD -->
+            <div class='section-block section-pcd'>
+                <div class='title-pcd'>Inclusão PCD</div>
+                <div class='cards-row'>
+                    <div class='info-item card-pcd-total'>
+                        <span class='label'>PCD Total</span>
+                        <span class='value' style='color: #005ca4;'>" & vPcdTotal & "</span>
+                    </div>
+                    <div class='info-item card-homem'>
+                        <span class='label'>PCD Homens</span>
+                        <span class='value' style='color: #0084c2;'>" & vPcdHomens & "</span>
+                    </div>
+                    <div class='info-item card-mulher'>
+                        <span class='label'>PCD Mulheres</span>
+                        <span class='value' style='color: #b81d77;'>" & vPcdMulheres & "</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class='divider'></div>
+
+            <!-- BLOCO 3: DEMOGRAFIA / GÊNERO -->
+            <div class='section-block section-genero'>
+                <div class='title-genero'>Gênero</div>
+                <div class='cards-row'>
+                    <div class='info-item card-homem'>
+                        <span class='label'>Homens</span>
+                        <span class='value' style='color: #0084c2;'>" & vHomens & "</span>
+                    </div>
+                    <div class='info-item card-mulher'>
+                        <span class='label'>Mulheres</span>
+                        <span class='value' style='color: #b81d77;'>" & vMulheres & "</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+"
