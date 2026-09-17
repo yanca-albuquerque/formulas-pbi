@@ -1,43 +1,47 @@
+DifDias = DATEDIFF('Base'[data_inicio], 'Base'[data_fim], DAY)
+
 Aging = 
 SWITCH(
     TRUE(),
-    'Base'[Tabela] <= 1, "1 dia",
-    'Base'[Tabela] = 2, "2 dias",
-    'Base'[Tabela] = 3, "3 dias",
-    'Base'[Tabela] = 4, "4 dias",
-    'Base'[Tabela] = 5, "5 dias",
-    'Base'[Tabela] >= 6 && 'Base'[Tabela] <= 10, "6 a 10 dias",
-    'Base'[Tabela] >= 11 && 'Base'[Tabela] <= 15, "11 a 15 dias",
-    'Base'[Tabela] >= 16 && 'Base'[Tabela] <= 30, "16 a 30 dias",
-    'Base'[Tabela] >= 31 && 'Base'[Tabela] <= 60, "31 a 60 dias",
-    'Base'[Tabela] >= 61, "Acima 60 dias",
+    'Base'[DifDias] <= 1, "1 dia",
+    'Base'[DifDias] = 2, "2 dias",
+    'Base'[DifDias] = 3, "3 dias",
+    'Base'[DifDias] = 4, "4 dias",
+    'Base'[DifDias] = 5, "5 dias",
+    'Base'[DifDias] >= 6 && 'Base'[DifDias] <= 10, "6 a 10 dias",
+    'Base'[DifDias] >= 11 && 'Base'[DifDias] <= 15, "11 a 15 dias",
+    'Base'[DifDias] >= 16 && 'Base'[DifDias] <= 30, "16 a 30 dias",
+    'Base'[DifDias] >= 31 && 'Base'[DifDias] <= 60, "31 a 60 dias",
+    'Base'[DifDias] >= 61, "Acima 60 dias",
     "Valor indefinido"
 )
 
 Aging_Criacao = 
 SWITCH(
     TRUE(),
-    'Base'[Tabela] < 6, "Menor que 5 dias",
-    'Base'[Tabela] >= 6 && 'Base'[Tabela] < 15, "Entre 6 e 15 dias",
-    'Base'[Tabela] >= 15 && 'Base'[Tabela] < 30, "Entre 16 e 30 dias",
-    'Base'[Tabela] >= 30 && 'Base'[Tabela] < 41, "Entre 31 e 40 dias",
-    'Base'[Tabela] >= 41 && 'Base'[Tabela] < 61, "Entre 41 e 60 dias",
-    'Base'[Tabela] >= 61 && 'Base'[Tabela] < 91, "Entre 61 e 90 dias",
+    'Base'[DifDias] < 6, "Menor que 5 dias",
+    'Base'[DifDias] >= 6 && 'Base'[DifDias] < 15, "Entre 6 e 15 dias",
+    'Base'[DifDias] >= 15 && 'Base'[DifDias] < 30, "Entre 16 e 30 dias",
+    'Base'[DifDias] >= 30 && 'Base'[DifDias] < 41, "Entre 31 e 40 dias",
+    'Base'[DifDias] >= 41 && 'Base'[DifDias] < 61, "Entre 41 e 60 dias",
+    'Base'[DifDias] >= 61 && 'Base'[DifDias] < 91, "Entre 61 e 90 dias",
     "Maior que 90 dias"
 )
 
 Aging_Ordem = 
 SWITCH(
     TRUE(),
-    'Base'[Tabela] <= 1, 1,
-    'Base'[Tabela] = 2, 2,
-    'Base'[Tabela] = 3, 3,
-    'Base'[Tabela] = 4, 4,
-    'Base'[Tabela] = 5, 5,
-    'Base'[Tabela] >= 6 && 'Base'[Tabela] <= 10, 6,
-    'Base'[Tabela] >= 11 && 'Base'[Tabela] <= 15, 7,
-    'Base'[Tabela] >= 16 && 'Base'[Tabela] <= 30, 8,
-    'Base'[Tabela] >= 31 && 'Base'[Tabela] <= 60, 9,
-    'Base'[Tabela] > 60, 10,
+    'Base'[DifDias] <= 1, 1,
+    'Base'[DifDias] = 2, 2,
+    'Base'[DifDias] = 3, 3,
+    'Base'[DifDias] = 4, 4,
+    'Base'[DifDias] = 5, 5,
+    'Base'[DifDias] >= 6 && 'Base'[DifDias] <= 10, 6,
+    'Base'[DifDias] >= 11 && 'Base'[DifDias] <= 15, 7,
+    'Base'[DifDias] >= 16 && 'Base'[DifDias] <= 30, 8,
+    'Base'[DifDias] >= 31 && 'Base'[DifDias] <= 60, 9,
+    'Base'[DifDias] > 60, 10,
     11
 )
+
+
