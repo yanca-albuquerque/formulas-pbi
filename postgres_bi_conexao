@@ -1,5 +1,8 @@
 Conexão Postgres > BI
 
+Conferir se Driver esta instalado já no Powershell, caso não instalar ele: 
+Get-OdbcDriver | Select-Object Name, Platform, DriverVersion
+
 Instalar ODBC: https://www.postgresql.org/ftp/odbc/releases/
 
 No BI
