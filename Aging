@@ -43,5 +43,3 @@ SWITCH(
     'Base'[DifDias] > 60, 10,
     11
 )
-
-
