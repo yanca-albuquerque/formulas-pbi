@@ -1,0 +1,93 @@
+Html_Bloco_Glossario = 
+VAR _dados_documentacao = 
+    FILTER (
+        'Tabela',
+        NOT(ISBLANK('Tabela'[Regra]))
+    )
+
+VAR _html = 
+    CONCATENATEX (
+        _dados_documentacao,
+        "<div class='glossary-item'>" &
+            "<div class='glossary-item-name'>" & 'Tabela'[KPI] & "</div>" &
+            "<div class='glossary-item-description'>" & 'Tabela'[Regra] & "</div>" &  
+            "<div class='glossary-item-measure'>" &
+                "<span class='measure-pipe'>|</span> " & 'Tabela'[Medida] &
+            "</div>" &
+        "</div>",
+        "",
+        'Tabela'[KPI],
+        ASC
+    )
+
+RETURN 
+    "<html>
+        <head>
+            <style>
+                body {
+                    font-family: 'Segoe UI', Arial, sans-serif;
+                    background-color: #f8f8f8;
+                    margin: 0;
+                    padding: 0;
+                    width: 1280px;
+                    height: 720px;
+                    overflow: hidden;
+                }
+                .glossary-container {
+                    box-sizing: border-box;
+                    width: 100%;
+                    height: 100%;
+                    max-width: 1280px;
+                    margin: auto;
+                    background-color: #fff;
+                    padding: 24px 32px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                    overflow-y: auto;
+                }
+                .glossary-title {
+                    font-size: 28px;
+                    font-weight: 700;
+                    color: #252423;
+                    margin-bottom: 24px;
+                    padding-bottom: 12px;
+                    border-bottom: 2px solid #e1dfdd;
+                }
+                .glossary-item {
+                    padding: 14px 0;
+                    border-bottom: 1px solid #edebe9;
+                }
+                .glossary-item:last-child {
+                    border-bottom: none;
+                }
+                .glossary-item-name {
+                    font-size: 18px;
+                    font-weight: 700;
+                    color: #2c6ea4;
+                }
+                .glossary-item-description {
+                    font-size: 14px;
+                    color: #484644;
+                    margin-top: 4px;
+                    line-height: 1.5;
+                }
+                .glossary-item-measure {
+                font-size: 12px;
+                font-weight: 500;
+                font-family: 'Consolas', 'Courier New', monospace;
+                color: #127aaa;
+                background-color: #f3f9fd;
+                padding: 4px 8px;
+                border-radius: 4px;
+                margin-top: 6px;
+                display: inline-block;
+            }
+            </style>
+        </head>
+        <body>
+            <div class='glossary-container'>
+                <div class='glossary-title'>Glossário de Indicadores</div>"
+                & _html & 
+            "</div>
+        </body>
+    </html>"
