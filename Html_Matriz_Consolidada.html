@@ -1,0 +1,332 @@
+Html_Matriz_Consolidada = 
+// 1. Departamentos em ordem alfabética estrita
+VAR _Deptos = 
+    DATATABLE(
+        "Depto", STRING,
+        "Ordem", INTEGER,
+        {
+            {"Ambiental", 1},
+            {"Arquivo", 2},
+            {"Comercial", 3},
+            {"Compliance", 4},
+            {"DP", 5},
+            {"Engenharia", 6},
+            {"Financeiro", 7},
+            {"Jurídico", 8},
+            {"Oficina", 9},
+            {"Qualidade", 10},
+            {"SESMT", 11},
+            {"TI", 12}
+        }
+    )
+
+// 2. Definição do CSS no início com classes de estado e preenchimento vertical total
+VAR _CSS = 
+    "<style>
+        .uni-card {
+            width: 100%;
+            height: 100%; 
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            border: 1px solid #D4D7DE;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+            padding: 10px 8px;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .uni-tbl {
+            width: 100%;
+            height: 100%;
+            flex-grow: 1;
+            border-collapse: collapse;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        .uni-th {
+            padding: 10.5px 4px;
+            text-align: center;
+            background-color: #f8fafc;
+            color: #5c6b80;
+            font-weight: 600;
+            border: 1px solid #e2e8f0;
+        }
+        .uni-td {
+            padding: 11px 4px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            font-size: 11px;
+        }
+        .uni-left {
+            text-align: left;
+            padding-left: 8px;
+        }
+        .uni-dept {
+            font-weight: 600;
+            color: #274b52;
+        }
+        .cell-ativo {
+            background-color: #e0f2fe;
+            color: #005ca4;
+            font-weight: 600;
+        }
+        .cell-vazio {
+            color: #D4D7DE;
+        }
+        .cell-atd {
+            color: #015305;
+            font-weight: 600;
+        }
+        .cell-nat-alerta {
+            background-color: #fee2e2;
+            color: #A1343C;
+            font-weight: 700;
+        }
+        .cell-naval {
+            color: #19a1de;
+            font-weight: 600;
+        }
+        .cell-napic {
+            color: #5c6b80;
+        }
+        .uni-group-meses {
+            background-color: #f1f5f9;
+            color: #005ca4;
+            font-weight: 700;
+            border-right: 2px solid #cbd5e1;
+        }
+        .uni-group-status {
+            background-color: #f1f5f9;
+            color: #274b52;
+            font-weight: 700;
+        }
+        .uni-tot {
+            background-color: #005ca4;
+            color: #FFFFFF;
+            font-weight: 700;
+        }
+        .uni-tot-cell {
+            background-color: #f1f5f9;
+            color: #005ca4;
+            font-weight: 700;
+        }
+        .uni-border-mes-end {
+            border-right: 2px solid #cbd5e1;
+        }
+        .uni-prog-box {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 0 3px;
+        }
+        .uni-prog-bg {
+            flex: 1;
+            height: 6px;
+            background-color: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+            min-width: 45px;
+        }
+        .uni-prog-fill {
+            height: 100%;
+            background-color: #015305;
+            border-radius: 3px;
+        }
+        .uni-prog-val {
+            font-size: 9.5px;
+            font-weight: 700;
+            color: #015305;
+            min-width: 32px;
+            text-align: right;
+        }
+        .uni-tr-foot .uni-th {
+            background-color: #274b52;
+            color: #FFFFFF;
+            font-weight: 700;
+        }
+    </style>"
+
+// 3. Cabeçalho hierárquico unificado
+VAR _HeaderHTML = 
+    "<thead>
+        <tr class='uni-tr-top'>
+            <th class='uni-th uni-left' rowspan='2' style='width: 150px;'>Departamento</th>
+            <th class='uni-th uni-group-meses' colspan='12'>Evolução Mensal (Competência)</th>
+            <th class='uni-th uni-group-status' colspan='6'>Status</th>
+        </tr>
+        <tr class='uni-tr-sub'>
+            <th class='uni-th'>Jan</th>
+            <th class='uni-th'>Fev</th>
+            <th class='uni-th'>Mar</th>
+            <th class='uni-th'>Abr</th>
+            <th class='uni-th'>Mai</th>
+            <th class='uni-th'>Jun</th>
+            <th class='uni-th'>Jul</th>
+            <th class='uni-th'>Ago</th>
+            <th class='uni-th'>Set</th>
+            <th class='uni-th'>Out</th>
+            <th class='uni-th'>Nov</th>
+            <th class='uni-th uni-border-mes-end'>Dez</th>
+            <th class='uni-th' style='color: #015305;'>Atd</th>
+            <th class='uni-th' style='color: #A1343C;'>N. Atd</th>
+            <th class='uni-th' style='color: #19a1de;'>N. Aval</th>
+            <th class='uni-th' style='color: #5c6b80;'>N. Apic</th>
+            <th class='uni-th uni-tot' style='width: 55px;'>Total</th>
+            <th class='uni-th' style='width: 95px;'>% Avaliado</th>
+        </tr>
+    </thead>"
+
+// 4. Montagem das 12 linhas
+VAR _BodyHTML = 
+    "<tbody>" &
+    CONCATENATEX(
+        _Deptos,
+        VAR _CurrentDepto = [Depto]
+
+        // Totais mensais
+        VAR _C_Jan = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Departamento] = _CurrentDepto, 'Tabela'[Competência] = "01 - Jan") + 0
+        VAR _C_Fev = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Departamento] = _CurrentDepto, 'Tabela'[Competência] = "02 - Fev") + 0
+        VAR _C_Mar = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Departamento] = _CurrentDepto, 'Tabela'[Competência] = "03 - Mar") + 0
+        VAR _C_Abr = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Departamento] = _CurrentDepto, 'Tabela'[Competência] = "04 - Abr") + 0
+        VAR _C_Mai = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Departamento] = _CurrentDepto, 'Tabela'[Competência] = "05 - Mai") + 0
+        VAR _C_Jun = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Departamento] = _CurrentDepto, 'Tabela'[Competência] = "06 - Jun") + 0
+        VAR _C_Jul = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Departamento] = _CurrentDepto, 'Tabela'[Competência] = "07 - Jul") + 0
+        VAR _C_Ago = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Departamento] = _CurrentDepto, 'Tabela'[Competência] = "08 - Ago") + 0
+        VAR _C_Set = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Departamento] = _CurrentDepto, 'Tabela'[Competência] = "09 - Set") + 0
+        VAR _C_Out = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Departamento] = _CurrentDepto, 'Tabela'[Competência] = "10 - Out") + 0
+        VAR _C_Nov = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Departamento] = _CurrentDepto, 'Tabela'[Competência] = "11 - Nov") + 0
+        VAR _C_Dez = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Departamento] = _CurrentDepto, 'Tabela'[Competência] = "12 - Dez") + 0
+
+        // Totais e Status consolidados
+        VAR _TotalDepto = 
+            CALCULATE(
+                COUNTROWS('Tabela'), 
+                'Tabela'[Departamento] = _CurrentDepto
+            ) + 0
+
+        VAR _Atendidos = 
+            CALCULATE(
+                COUNTROWS('Tabela'), 
+                'Tabela'[Departamento] = _CurrentDepto, 
+                'Tabela'[Status] = "Atendido"
+            ) + 0
+
+        VAR _NaoAtendidos = 
+            CALCULATE(
+                COUNTROWS('Tabela'), 
+                'Tabela'[Departamento] = _CurrentDepto, 
+                'Tabela'[Status] IN {"Não atendido", "Não Atendido"}
+            ) + 0
+
+        VAR _NaoAvaliados = 
+            CALCULATE(
+                COUNTROWS('Tabela'), 
+                'Tabela'[Departamento] = _CurrentDepto, 
+                'Tabela'[Status] IN {"Não avaliado", "Não Avaliado"}
+            ) + 0
+
+        VAR _NaoAplicavel = 
+            CALCULATE(
+                COUNTROWS('Tabela'), 
+                'Tabela'[Departamento] = _CurrentDepto, 
+                'Tabela'[Status] IN {"Não aplicável", "Não Aplicável"}
+            ) + 0
+
+        VAR _ItensAvaliados = _Atendidos + _NaoAplicavel
+        VAR _PctAval = DIVIDE(_ItensAvaliados, _TotalDepto, 0)
+        VAR _PctTxt = IF(_TotalDepto > 0, FORMAT(_PctAval, "0.0%"), "-")
+        VAR _BarWidth = FORMAT(_PctAval * 100, "0.0") & "%"
+
+        RETURN
+        "<tr class='uni-tr-row'>
+            <td class='uni-td uni-left uni-dept'>" & _CurrentDepto & "</td>" &
+            "<td class='uni-td " & IF(_C_Jan > 0, "cell-ativo", "cell-vazio") & "'>" & IF(_C_Jan = 0, "-", FORMAT(_C_Jan, "#,##0")) & "</td>" &
+            "<td class='uni-td " & IF(_C_Fev > 0, "cell-ativo", "cell-vazio") & "'>" & IF(_C_Fev = 0, "-", FORMAT(_C_Fev, "#,##0")) & "</td>" &
+            "<td class='uni-td " & IF(_C_Mar > 0, "cell-ativo", "cell-vazio") & "'>" & IF(_C_Mar = 0, "-", FORMAT(_C_Mar, "#,##0")) & "</td>" &
+            "<td class='uni-td " & IF(_C_Abr > 0, "cell-ativo", "cell-vazio") & "'>" & IF(_C_Abr = 0, "-", FORMAT(_C_Abr, "#,##0")) & "</td>" &
+            "<td class='uni-td " & IF(_C_Mai > 0, "cell-ativo", "cell-vazio") & "'>" & IF(_C_Mai = 0, "-", FORMAT(_C_Mai, "#,##0")) & "</td>" &
+            "<td class='uni-td " & IF(_C_Jun > 0, "cell-ativo", "cell-vazio") & "'>" & IF(_C_Jun = 0, "-", FORMAT(_C_Jun, "#,##0")) & "</td>" &
+            "<td class='uni-td " & IF(_C_Jul > 0, "cell-ativo", "cell-vazio") & "'>" & IF(_C_Jul = 0, "-", FORMAT(_C_Jul, "#,##0")) & "</td>" &
+            "<td class='uni-td " & IF(_C_Ago > 0, "cell-ativo", "cell-vazio") & "'>" & IF(_C_Ago = 0, "-", FORMAT(_C_Ago, "#,##0")) & "</td>" &
+            "<td class='uni-td " & IF(_C_Set > 0, "cell-ativo", "cell-vazio") & "'>" & IF(_C_Set = 0, "-", FORMAT(_C_Set, "#,##0")) & "</td>" &
+            "<td class='uni-td " & IF(_C_Out > 0, "cell-ativo", "cell-vazio") & "'>" & IF(_C_Out = 0, "-", FORMAT(_C_Out, "#,##0")) & "</td>" &
+            "<td class='uni-td " & IF(_C_Nov > 0, "cell-ativo", "cell-vazio") & "'>" & IF(_C_Nov = 0, "-", FORMAT(_C_Nov, "#,##0")) & "</td>" &
+            "<td class='uni-td uni-border-mes-end " & IF(_C_Dez > 0, "cell-ativo", "cell-vazio") & "'>" & IF(_C_Dez = 0, "-", FORMAT(_C_Dez, "#,##0")) & "</td>" &
+            "<td class='uni-td cell-atd'>" & IF(_Atendidos = 0, "<span style='color:#cbd5e1;'>-</span>", FORMAT(_Atendidos, "#,##0")) & "</td>" &
+            "<td class='uni-td " & IF(_NaoAtendidos > 0, "cell-nat-alerta", "cell-vazio") & "'>" & IF(_NaoAtendidos = 0, "-", FORMAT(_NaoAtendidos, "#,##0")) & "</td>" &
+            "<td class='uni-td cell-naval'>" & IF(_NaoAvaliados = 0, "<span style='color:#cbd5e1;'>-</span>", FORMAT(_NaoAvaliados, "#,##0")) & "</td>" &
+            "<td class='uni-td cell-napic'>" & IF(_NaoAplicavel = 0, "<span style='color:#cbd5e1;'>-</span>", FORMAT(_NaoAplicavel, "#,##0")) & "</td>" &
+            "<td class='uni-td uni-tot-cell'>" & FORMAT(_TotalDepto, "#,##0") & "</td>" &
+            "<td class='uni-td'>
+                <div class='uni-prog-box'>
+                    <div class='uni-prog-bg'><div class='uni-prog-fill' style='width:" & _BarWidth & ";'></div></div>
+                    <span class='uni-prog-val'>" & _PctTxt & "</span>
+                </div>
+            </td>
+        </tr>",
+        "",
+        [Ordem], ASC
+    ) & "</tbody>"
+
+// 5. Totais gerais do rodapé
+VAR _T_Jan = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Competência] = "01 - Jan") + 0
+VAR _T_Fev = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Competência] = "02 - Fev") + 0
+VAR _T_Mar = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Competência] = "03 - Mar") + 0
+VAR _T_Abr = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Competência] = "04 - Abr") + 0
+VAR _T_Mai = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Competência] = "05 - Mai") + 0
+VAR _T_Jun = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Competência] = "06 - Jun") + 0
+VAR _T_Jul = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Competência] = "07 - Jul") + 0
+VAR _T_Ago = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Competência] = "08 - Ago") + 0
+VAR _T_Set = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Competência] = "09 - Set") + 0
+VAR _T_Out = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Competência] = "10 - Out") + 0
+VAR _T_Nov = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Competência] = "11 - Nov") + 0
+VAR _T_Dez = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Competência] = "12 - Dez") + 0
+
+VAR _TotGeral = COUNTROWS('Tabela') + 0
+VAR _TotAtend = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Status] = "Atendido") + 0
+VAR _TotNAtnd = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Status] IN {"Não atendido", "Não Atendido"}) + 0
+VAR _TotNAval = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Status] IN {"Não avaliado", "Não Avaliado"}) + 0
+VAR _TotNApli = CALCULATE(COUNTROWS('Tabela'), 'Tabela'[Status] IN {"Não aplicável", "Não Aplicável"}) + 0
+
+// Total Geral: (Atendidos + Não Aplicáveis) / Total
+VAR _TotItensAvaliados = _TotAtend + _TotNApli
+VAR _TotPctAval = IF(_TotGeral > 0, FORMAT(DIVIDE(_TotItensAvaliados, _TotGeral, 0), "0.0%"), "-")
+
+VAR _FooterHTML = 
+    "<tfoot>
+        <tr class='uni-tr-foot'>
+            <td class='uni-th uni-left'>TOTAL GERAL</td>" &
+            "<td class='uni-th'>" & IF(_T_Jan = 0, "-", FORMAT(_T_Jan, "#,##0")) & "</td>" &
+            "<td class='uni-th'>" & IF(_T_Fev = 0, "-", FORMAT(_T_Fev, "#,##0")) & "</td>" &
+            "<td class='uni-th'>" & IF(_T_Mar = 0, "-", FORMAT(_T_Mar, "#,##0")) & "</td>" &
+            "<td class='uni-th'>" & IF(_T_Abr = 0, "-", FORMAT(_T_Abr, "#,##0")) & "</td>" &
+            "<td class='uni-th'>" & IF(_T_Mai = 0, "-", FORMAT(_T_Mai, "#,##0")) & "</td>" &
+            "<td class='uni-th'>" & IF(_T_Jun = 0, "-", FORMAT(_T_Jun, "#,##0")) & "</td>" &
+            "<td class='uni-th'>" & IF(_T_Jul = 0, "-", FORMAT(_T_Jul, "#,##0")) & "</td>" &
+            "<td class='uni-th'>" & IF(_T_Ago = 0, "-", FORMAT(_T_Ago, "#,##0")) & "</td>" &
+            "<td class='uni-th'>" & IF(_T_Set = 0, "-", FORMAT(_T_Set, "#,##0")) & "</td>" &
+            "<td class='uni-th'>" & IF(_T_Out = 0, "-", FORMAT(_T_Out, "#,##0")) & "</td>" &
+            "<td class='uni-th'>" & IF(_T_Nov = 0, "-", FORMAT(_T_Nov, "#,##0")) & "</td>" &
+            "<td class='uni-th uni-border-mes-end'>" & IF(_T_Dez = 0, "-", FORMAT(_T_Dez, "#,##0")) & "</td>" &
+            "<td class='uni-th'>" & FORMAT(_TotAtend, "#,##0") & "</td>" &
+            "<td class='uni-th' style='background-color: #A1343C; color: #FFFFFF;'>" & FORMAT(_TotNAtnd, "#,##0") & "</td>" &
+            "<td class='uni-th'>" & FORMAT(_TotNAval, "#,##0") & "</td>" &
+            "<td class='uni-th'>" & FORMAT(_TotNApli, "#,##0") & "</td>" &
+            "<td class='uni-th uni-tot'>" & FORMAT(_TotGeral, "#,##0") & "</td>" &
+            "<td class='uni-th'>" & _TotPctAval & "</td>
+        </tr>
+    </tfoot>"
+
+// 6. Retorno na ordem estrita: CSS primeiro, depois a estrutura DOM
+RETURN
+_CSS & "
+<div class='uni-card'>
+    <table class='uni-tbl'>" & 
+        _HeaderHTML & 
+        _BodyHTML & 
+        _FooterHTML & "
+    </table>
+</div>"
