@@ -1,0 +1,142 @@
+Card_Html_Hover = 
+// 1. Puxando as medidas da sua tabela
+VAR _ValorAtual = [Total]      
+VAR _VariacaoPct = [Variacao]   
+VAR _PeriodoTexto = [Periodo Selecionado]       -- (ou SELECTEDVALUE('Tabela'[Periodo]))
+
+// 2. Formatações e Eixo
+VAR _Titulo = "TOTAL"
+VAR _ValorPrincipal = "R$ " & FORMAT(_ValorAtual / 1000, "#,##0.0 K")
+VAR _VariacaoFormatada = FORMAT(ABS(_VariacaoPct), "0,0%")
+VAR _Seta = IF(_VariacaoPct >= 0, "▲", "▼")
+VAR _BadgeBg = IF(_VariacaoPct >= 0, "#dcfce7", "#fee2e2")
+VAR _BadgeColor = IF(_VariacaoPct >= 0, "#15803d", "#ef4444")
+
+-- Anos dos rótulos inferiores
+VAR _AnoAtual = IF(ISBLANK(SELECTEDVALUE('Tabela'[Competência])), YEAR(TODAY()), SELECTEDVALUE('Tabela'[Competência]))
+VAR _Ano1 = FORMAT(_AnoAtual - 1, "0")
+VAR _Ano2 = FORMAT(_AnoAtual, "0")
+VAR _Ano3 = FORMAT(_AnoAtual + 1, "0")
+
+// Mini Gráfico SVG
+VAR _SparklineSVG = "
+<svg viewBox='0 0 280 65' width='100%' height='65' style='overflow: visible; display: block;'>
+    <defs>
+        <linearGradient id='gradArea' x1='0' y1='0' x2='0' y2='1'>
+            <stop offset='0%' stop-color='#3b82f6' stop-opacity='0.18'/>
+            <stop offset='100%' stop-color='#3b82f6' stop-opacity='0.0'/>
+        </linearGradient>
+    </defs>
+    <line x1='140' y1='10' x2='140' y2='65' stroke='#cbd5e1' stroke-width='1.5' stroke-dasharray='3 3'/>
+    <polygon points='10,12 140,20 270,18 270,65 10,65' fill='url(#gradArea)'/>
+    <polyline points='10,12 140,20 270,18' fill='none' stroke='#94a3b8' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'/>
+</svg>
+"
+
+RETURN
+"<style>
+    .card-container {
+        position: relative;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background: #ffffff;
+        border-radius: 18px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+        width: 100%;
+        max-width: 320px;
+        min-height: 200px;
+        box-sizing: border-box;
+        overflow: hidden;
+        cursor: pointer;
+    }
+    .card-front {
+        padding: 18px 20px 14px 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        box-sizing: border-box;
+        transition: opacity 0.25s ease;
+    }
+    .card-hover-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #005ce6;
+        color: #ffffff;
+        padding: 24px 20px;
+        box-sizing: border-box;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease-in-out;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+    .card-container:hover .card-hover-overlay {
+        opacity: 1;
+        pointer-events: auto;
+    }
+</style>
+
+<div class='card-container'>
+    <div class='card-front'>
+        <div style='display: flex; align-items: flex-start; gap: 10px;'>
+            <div style='
+                background: #f0f7ff;
+                color: #2563eb;
+                width: 26px;
+                height: 26px;
+                border-radius: 7px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 14px;
+                font-weight: 700;
+                flex-shrink: 0;
+            '>$</div>
+            <div>
+                <div style='color: #475569; font-size: 10px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase;'>" & _Titulo & "</div>
+                <div style='color: #94a3b8; font-size: 11px; margin-top: 1px;'>" & _PeriodoTexto & "</div>
+            </div>
+        </div>
+
+        <div style='display: flex; justify-content: space-between; align-items: center; margin-top: 10px;'>
+            <div style='color: #0f172a; font-size: 28px; font-weight: 900; letter-spacing: -0.5px;'>
+                " & _ValorPrincipal & "
+            </div>
+            <div style='text-align: right;'>
+                <div style='
+                    display: inline-block;
+                    background-color: " & _BadgeBg & ";
+                    color: " & _BadgeColor & ";
+                    font-size: 10px;
+                    font-weight: 800;
+                    padding: 2px 7px;
+                    border-radius: 5px;
+                '>" & _Seta & " " & _VariacaoFormatada & "</div>
+                <div style='color: #94a3b8; font-size: 9.5px; margin-top: 2px;'>vs. ano anterior</div>
+            </div>
+        </div>
+
+        <div style='margin-top: 12px;'>
+            " & _SparklineSVG & "
+            <div style='display: flex; justify-content: space-between; color: #94a3b8; font-size: 9.5px; font-weight: 600; padding: 0 4px; margin-top: 4px;'>
+                <span>" & _Ano1 & "</span>
+                <span>" & _Ano2 & "</span>
+                <span>" & _Ano3 & "</span>
+            </div>
+        </div>
+    </div>
+
+    <div class='card-hover-overlay'>
+        <div style='font-size: 15px; font-weight: 700; border-bottom: 1px solid rgba(255, 255, 255, 0.25); padding-bottom: 8px; margin-bottom: 12px;'>
+            Sobre a métrica
+        </div>
+        <div style='font-size: 12px; line-height: 1.5; color: #f1f5f9; font-weight: 400;'>
+            Total referente a " & _PeriodoTexto & ". <b>O card mostra a variação % comparada ao mesmo período do ano anterior.</b>
+        </div>
+    </div>
+</div>
+"
