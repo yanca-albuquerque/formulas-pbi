@@ -1,0 +1,95 @@
+Card_Html_Bolinhas = 
+// 1. Puxando as medidas da sua tabela
+VAR _ValorAtual = [Total]             -- Sua medida de valor
+VAR _PctMeta = [Percentual Meta]                -- Sua medida de % atingido
+VAR _ValorFalta = [Valor Falta Meta]            -- Sua medida de quanto falta
+VAR _VariacaoPct = [Variacao]               -- Sua medida de variação %
+
+// 2. Formatações e Cálculos
+VAR _Titulo = "Total"
+VAR _ValorPrincipal = "R$ " & FORMAT(_ValorAtual / 1000, "#,##0.0K")
+VAR _ValorFaltaMeta = "R$ " & FORMAT(_ValorFalta / 1000, "#,##0.0K")
+VAR _VariacaoFormatada = FORMAT(ABS(_VariacaoPct), "0.0%")
+VAR _SetaVariacao = IF(_VariacaoPct >= 0, "↗", "↘")
+VAR _BadgeBg = IF(_VariacaoPct >= 0, "#dcfce7", "#fee2e2")
+VAR _BadgeColor = IF(_VariacaoPct >= 0, "#15803d", "#b91c1c")
+
+-- Cálculo dos pontos ativos (grade 5x5 = 25 pontos)
+VAR _TotalPontos = 25
+VAR _PontosAtivos = MIN(25, MAX(0, ROUND(_PctMeta * _TotalPontos, 0)))
+VAR _CorAtiva = "#f43f5e"
+VAR _CorInativa = "#f1f5f9"
+
+-- Montagem dinâmica dos pontos SVG (preenchimento de baixo para cima)
+VAR _DotsSVG = 
+    "<svg width='64' height='64' viewBox='0 0 70 70' style='display:block; margin: 0 auto;'>" &
+    CONCATENATEX(
+        GENERATESERIES(1, 25, 1),
+        VAR _Idx = [Value]
+        VAR _Linha = INT((_Idx - 1) / 5)
+        VAR _Coluna = MOD(_Idx - 1, 5)
+        VAR _CX = 7 + _Coluna * 14
+        VAR _CY = 7 + _Linha * 14
+        VAR _IndiceInvertido = (4 - _Linha) * 5 + (_Coluna + 1)
+        VAR _CorPonto = IF(_IndiceInvertido <= _PontosAtivos, _CorAtiva, _CorInativa)
+        RETURN "<circle cx='" & _CX & "' cy='" & _CY & "' r='4.5' fill='" & _CorPonto & "' />",
+        ""
+    ) &
+    "</svg>"
+
+// 3. Montagem do HTML+CSS
+RETURN
+"<div style='
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 18px 24px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 380px;
+    box-sizing: border-box;
+'>
+    <div style='display: flex; flex-direction: column; gap: 8px;'>
+        <div style='display: flex; align-items: center; gap: 8px;'>
+            <div style='
+                background: #f1f5f9;
+                color: #64748b;
+                width: 24px;
+                height: 24px;
+                border-radius: 6px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 13px;
+                font-weight: 700;
+            '>$</div>
+            <span style='color: #64748b; font-size: 13px; font-weight: 600;'>" & _Titulo & "</span>
+        </div>
+        <div style='color: #0f172a; font-size: 26px; font-weight: 800; letter-spacing: -0.5px;'>
+            " & _ValorPrincipal & "
+        </div>
+        <div style='display: flex; align-items: center; gap: 6px; margin-top: 2px;'>
+            <span style='
+                background-color: " & _BadgeBg & ";
+                color: " & _BadgeColor & ";
+                font-size: 11px;
+                font-weight: 700;
+                padding: 2px 7px;
+                border-radius: 6px;
+            '>" & _SetaVariacao & " " & _VariacaoFormatada & "</span>
+            <span style='color: #94a3b8; font-size: 11px; font-weight: 500;'>vs ano ant.</span>
+        </div>
+    </div>
+
+    <div style='display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px;'>
+        " & _DotsSVG & "
+        <div style='color: " & _CorAtiva & "; font-size: 18px; font-weight: 800; line-height: 1.1;'>" 
+            & FORMAT(_PctMeta, "0%") & 
+        "</div>
+        <div style='color: #94a3b8; font-size: 9.5px; font-weight: 500;'>
+            faltam <span style='color: " & _CorAtiva & "; font-weight: 700;'>" & _ValorFaltaMeta & "</span> da meta
+        </div>
+    </div>
+</div>"
