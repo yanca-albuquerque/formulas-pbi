@@ -1,4 +1,10 @@
-# Fórmulas BI
+# Fórmulas e Planilhas Auxiliares para o Power BI
 
-Fórmulas para ajudar no suporte do dia a dia no POWER BI.
-- Para uso dos HTML: criar como medidas e usar no Visual HTML Content.
+Repositório centralizado com códigos DAX, fórmulas, scripts e planilhas auxiliares para dar suporte ao desenvolvimento e manutenção de relatórios e dashboards no **Power BI**.
+
+---
+
+## O que você encontra aqui?
+
+* **Medidas DAX & HTML:** Snippets prontos para uso em cartões customizados e visuais HTML.
+* **Bases Auxiliares:** Arquivos e datasets prontos para consultas e relacionamentos (ex: tabelas de apoio como CID-10).
